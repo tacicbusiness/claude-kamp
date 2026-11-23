@@ -19,7 +19,7 @@ jobs:
           elif [ "$H" = "08" ]; then KIND=jutro
           elif [ "$H" = "21" ]; then KIND=vece
           else echo "Nije vreme ($H h)"; exit 0; fi
-          PRIO=4
+          PRIO=3
           if [ "$KIND" = "vece" ]; then
             DANAS=$(TZ=Europe/Belgrade date +%F)
             UCIO=$(curl -s "https://ntfy.sh/$DONE_TOPIC/json?poll=1&since=20h" | jq -r '.message // empty' | grep -c "^$DANAS$" || true)
