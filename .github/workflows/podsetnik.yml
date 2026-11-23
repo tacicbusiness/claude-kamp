@@ -1,0 +1,34 @@
+name: Podsetnik
+on:
+  schedule:
+    - cron: "0 6,7,19,20 * * *"
+  workflow_dispatch:
+jobs:
+  posalji:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Posalji push na telefon
+        env:
+          TOPIC: ${{ secrets.NTFY_TOPIC }}
+          RUCNO: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          H=$(TZ=Europe/Belgrade date +%H)
+          D=$(TZ=Europe/Belgrade date +%j)
+          if [ "$RUCNO" = "true" ]; then KIND=test
+          elif [ "$H" = "08" ]; then KIND=jutro
+          elif [ "$H" = "21" ]; then KIND=vece
+          else echo "Nije vreme ($H h)"; exit 0; fi
+          case $KIND in
+            jutro)
+              T="Gong! Runda počinje 🥊"
+              M=("Danas 15 minuta, jedna lekcija. Niz se ne prekida." "Šampioni treniraju i kad im se ne da. Otvori Kamp." "Jedna lekcija danas = korak bliže 5.000 €/mes." "Rukavice na ruke. Današnja lekcija te čeka." "Mali koraci, svaki dan. Ajmo jednu lekciju.");;
+            vece)
+              T="Jesi odradio današnju rundu? 🔥"
+              M=("Ako jesi, svaka čast. Ako nisi, još stigneš 15 minuta." "Niz dana se prekida u ponoć. Jedna lekcija i spavaj mirno." "Ne idi u krevet bez runde. 15 minuta, Uroše." "Dan bez treninga je izgubljen dan. Otvori Kamp.");;
+            test)
+              T="Claude Kamp radi ✅"; M=("Podsetnici su povezani. Vidimo se u 8h i 21h.");;
+          esac
+          MSG="${M[$((10#$D % ${#M[@]}))]}"
+          jq -n --arg t "$TOPIC" --arg ti "$T" --arg m "$MSG" \
+            '{topic:$t,title:$ti,message:$m,tags:["boxing_glove"],priority:4,click:"https://tacicbusiness.github.io/claude-kamp/"}' \
+            | curl -sS -H "Content-Type: application/json" -d @- https://ntfy.sh

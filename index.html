@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="sr-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0F12">
+<title>Claude Kamp</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;125,800;125,900&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Ring: tamna arena, crveni ugao, zlato za rang. Gore "kartica borca" (rang, XP, niz), pa sledeća runda, pa plan po rundama. */
+:root{
+  --bg:#0E0F12; --surface:#17191F; --surface2:#20232B; --ink:#F1F2F5; --muted:#8E94A3; --line:#2A2E38;
+  --red:#D7263D; --red-soft:#3A161C; --gold:#E8B23A; --gold-soft:#3A2E12; --green:#3DBE7E; --green-soft:#13301F;
+  --display:"Archivo",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-stretch:100%;font-size:15px;line-height:1.5;
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background-image:radial-gradient(ellipse 120% 50% at 50% -10%,#2a1218 0%,transparent 60%)}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{margin:0;font-stretch:125%;text-wrap:balance}
+.mono{font-family:var(--mono)}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+button{font:inherit;cursor:pointer;border:0;border-radius:10px;color:inherit;background:none}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:900;font-size:22px;letter-spacing:.02em;text-transform:uppercase;font-stretch:125%}
+.logo b{color:var(--red)}
+.iconbtn{width:40px;height:40px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line)}
+
+.fighter{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.belt{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--belt) calc(var(--p)*1%),var(--line) 0)}
+.belt::before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--surface)}
+.belt span{position:relative;font-size:30px}
+.rank{font-size:22px;font-weight:900;text-transform:uppercase}
+.xpline{color:var(--muted);font-size:13px}
+.xpline b{color:var(--ink);font-family:var(--mono)}
+.stats{grid-column:1/-1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface2);border-radius:10px;padding:10px;text-align:center}
+.stat .v{font-family:var(--mono);font-weight:700;font-size:22px;font-variant-numeric:tabular-nums}
+.stat .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.stat.fire .v{color:var(--gold)}
+.today{grid-column:1/-1;font-size:13px;padding:8px 12px;border-radius:8px;background:var(--red-soft);color:#ffb3bd}
+.today.ok{background:var(--green-soft);color:#9be7bf}
+
+.next{border-radius:16px;padding:18px;background:linear-gradient(135deg,#B81D33,#7A1222);display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.next::after{content:"🥊";position:absolute;right:-8px;bottom:-14px;font-size:96px;opacity:.15;transform:rotate(-15deg)}
+.next .eyebrow{color:#ffd0d6}
+.next h2{font-size:24px;font-weight:900;line-height:1.1}
+.next p{margin:0;color:#ffe3e7;max-width:56ch}
+.next .task{background:rgba(0,0,0,.22);border-radius:10px;padding:10px 12px;font-size:14px}
+.next .task b{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-right:6px;color:#ffd0d6}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:12px 16px;font-weight:700;border-radius:10px}
+.btn-w{background:#fff;color:#7A1222}
+.btn-o{background:rgba(255,255,255,.12);color:#fff}
+
+.secthead{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+.secthead h3{font-size:16px;font-weight:900;text-transform:uppercase}
+.rounds{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
+.rounds i{height:8px;border-radius:4px;background:var(--line)}
+.rounds i.p{background:var(--red)} .rounds i.f{background:var(--green)}
+
+.module{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.module.full{border-color:#245a3c}
+.mhead{width:100%;display:flex;gap:12px;align-items:center;padding:14px;text-align:left;border-radius:0}
+.rn{width:44px;height:44px;flex:none;border-radius:10px;background:var(--surface2);display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--red)}
+.module.full .rn{background:var(--green-soft);color:var(--green)}
+.mt{flex:1;min-width:0}
+.mt h3{font-size:16px;font-weight:800;font-stretch:110%}
+.mt p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.mbar{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
+.mbar i{display:block;height:100%;background:var(--red)}
+.module.full .mbar i{background:var(--green)}
+.mc{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.lessons{border-top:1px solid var(--line)}
+.lesson{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
+.lesson:first-child{border-top:0}
+.chk{width:30px;height:30px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font-weight:900;color:#0E0F12;transition:transform .15s}
+.chk:active{transform:scale(.85)}
+.lesson.done .chk{background:var(--green);border-color:var(--green)}
+.lt{font-weight:700}
+.lt .id{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:6px}
+.lesson.done .lt{color:var(--green)}
+.ld{margin:2px 0 6px;font-size:13px;color:var(--muted)}
+.lk{font-size:13px;background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.lk b{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-right:6px}
+.copy{font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+
+.ranks{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.rk{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;opacity:.45}
+.rk.on{opacity:1;border-color:var(--gold)}
+.rk .e{font-size:24px} .rk .n{font-weight:800;font-size:13px} .rk .x{font-family:var(--mono);font-size:11px;color:var(--muted)}
+
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet>div{background:var(--surface);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;max-height:85vh;overflow:auto}
+.sheet h3{font-size:18px;font-weight:900;text-transform:uppercase}
+.sheet p,.sheet li{color:var(--muted);font-size:14px;margin:0}
+.sheet ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.btn-r{background:var(--red);color:#fff}
+.btn-g{background:var(--surface2);color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:40;max-width:calc(100% - 32px);text-align:center}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.win{position:fixed;inset:0;display:grid;place-items:center;z-index:30;pointer-events:none}
+.win div{background:var(--gold);color:#1a1300;font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:28px;padding:18px 26px;border-radius:14px;text-align:center;animation:pop 1.8s ease forwards;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.win small{display:block;font-size:14px;font-weight:600;font-stretch:100%;text-transform:none}
+@keyframes pop{0%{transform:scale(.3);opacity:0}15%{transform:scale(1.08);opacity:1}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(.95)}}
+canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:29}
+@media (prefers-reduced-motion:reduce){.win div{animation:none}.toast{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="logo">Claude <b>Kamp</b></div>
+    <div class="row">
+      <button class="iconbtn" id="btnInfo" aria-label="Podešavanja i pomoć">⚙️</button>
+    </div>
+  </div>
+
+  <section class="fighter" id="fighter"></section>
+  <section class="next" id="next"></section>
+
+  <div class="secthead"><h3>Plan borbe</h3><span class="eyebrow" id="planCount"></span></div>
+  <div class="rounds" id="rounds"></div>
+  <main id="modules" style="display:flex;flex-direction:column;gap:10px"></main>
+
+  <div class="secthead"><h3>Rangovi</h3><span class="eyebrow">100 XP po lekciji · +250 za rundu</span></div>
+  <div class="ranks" id="ranks"></div>
+</div>
+
+<div class="sheet" id="sheet" hidden><div>
+  <h3>Kamp · podešavanja</h3>
+  <p><b style="color:var(--ink)">Kako se uči:</b> klikni „Kopiraj za Claude“, nalepi poruku u chat sa Claude-om i on te vodi kroz lekciju. Kad završiš, štikliraj je.</p>
+  <p><b style="color:var(--ink)">Podsetnici</b> stižu u 8h i 21h preko aplikacije ntfy (link za prijavu ti je dao Claude u chatu).</p>
+  <div class="row">
+    <button class="btn btn-g" id="btnSummary">Kopiraj napredak za Claude</button>
+    <button class="btn btn-g" id="btnSound"></button>
+  </div>
+  <p>Napredak se čuva na ovom telefonu. Ne briši podatke pregledača za ovu stranicu.</p>
+  <button class="btn btn-r" id="btnClose">Zatvori</button>
+</div></div>
+
+<canvas id="fx"></canvas>
+<div class="win" id="win" hidden></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const PLAN=[
+{n:1,t:"Kako AI zapravo radi",d:"Šta je ispred tebe, gde greši i kako da proveriš.",l:[
+ ["Šta je jezički model","Kako Claude „misli“, šta zna i šta ne zna, šta je kontekst.","Objasni mi svojim rečima šta je kontekst i zašto ga ja pamtim u memoriji."],
+ ["Halucinacije i provera","Zašto AI ume da izmisli podatak i kako da ga uhvatiš.","Proveri 3 tvrdnje iz našeg JIYU izveštaja preko izvora."],
+ ["Modeli, limiti i Pro plan","Opus, Sonnet, Haiku; kada koji; kako se troši limit.","Napravi svoju listu: koji zadatak ide na koji model."],
+ ["Bezbednost i privatnost","Šta nikad ne daješ AI-ju, prompt injection, podaci kupaca.","Napiši 5 pravila bezbednosti za svoj biznis."]]},
+{n:2,t:"Promptovanje",d:"Kako da dobiješ tačno ono što ti treba, iz prvog puta.",l:[
+ ["Anatomija dobrog prompta","Uloga, kontekst, zadatak, format i primer.","Prepravi jedan svoj stari, loš prompt po šemi."],
+ ["Primeri umesto opisa","Pokaži, ne objašnjavaj: few-shot tehnika.","Daj 2 primera OREUM teksta i traži treći u istom stilu."],
+ ["Iteracija i razgovor","Kako da doteraš rezultat u 3 koraka umesto 20.","Doteraj jedan Instagram opis za LOFT kroz 3 kruga."],
+ ["Šabloni koje ponovo koristiš","Tvoja biblioteka promptova za posao koji se ponavlja.","Napravi 5 šablona: reklama, opis proizvoda, istraživanje, mejl, scenario."],
+ ["Traži kritiku, ne pohvalu","Kako da te AI iskreno oceni i nađe rupe u ideji.","Daj mi OREUM plan i traži 10 najvećih slabosti."]]},
+{n:3,t:"Claude.ai kao radni sto",d:"Sve što Claude radi u browseru i na telefonu.",l:[
+ ["Projects i uputstva","Projekat sa stalnim uputstvima i fajlovima za jedan biznis.","Napravi Project „OREUM“ sa misijom, bojama i ciljevima."],
+ ["Memorija i personalizacija","Kako Claude pamti tebe i kako da to usmeriš.","Pregledaj šta Claude zna o tebi i ispravi jednu stavku."],
+ ["Fajlovi, PDF i slike","Analiza dokumenata, tabela, slika i snimaka ekrana.","Ubaci snimak konkurentske reklame i traži analizu."],
+ ["Web pretraga i Research","Kada brza pretraga, a kada duboko istraživanje.","Brzo istraži 3 konkurenta za toner pads u EU."],
+ ["Artifacts i dokumenti","Stranice, alati i dokumenti koje Claude pravi i deli.","Napravi kalkulator profita za jedan proizvod."]]},
+{n:4,t:"Claude Code: osnove",d:"Alat koji koristimo svaki dan, ispod haube.",l:[
+ ["Šta je Claude Code","Razlika između chata i agenta na tvom računaru.","Opiši šta se desilo kad sam ti analizirao video (alati, redosled)."],
+ ["Fajlovi, folderi i putanje","Kako je računar organizovan i kako se snalaziš.","Sredi folder „Claude Projekti“ po biznisima."],
+ ["Terminal bez straha","10 komandi koje treba da prepoznaš.","Sam pokreni 3 komande uz moje objašnjenje."],
+ ["Dozvole i auto mod","Šta Claude sme sam, a šta traži odobrenje.","Podesi dozvole da imaš manje klikova „Allow“."],
+ ["CLAUDE.md i memorija","Kontekst projekta da ne ponavljaš isto.","Napiši CLAUDE.md za OREUM folder."]]},
+{n:5,t:"Claude Code: napredno",d:"Ono što razdvaja korisnika od profesionalca.",l:[
+ ["Plan mod","Prvo plan, pa izvršenje.","Isplaniraj landing za OREUM u plan modu."],
+ ["Skills i slash komande","Paketi uputstava koje pozivaš jednom rečju.","Napravi svoj skill, na primer „/reklama“."],
+ ["MCP: povezivanje alata","Chrome, Drive, Gmail i drugi alati za Claude-a.","Poveži jedan novi alat i iskoristi ga."],
+ ["Subagenti i paralelan rad","Više AI radnika istovremeno.","Paralelno istraži AliExpress i CJ za jastučiće."],
+ ["Hooks i automatske radnje","„Svaki put kad X, uradi Y“.","Podesi jedan hook koji ti štedi vreme."],
+ ["Zakazani zadaci","Loop i schedule: Claude radi dok spavaš.","Zakaži nedeljni izveštaj o konkurenciji."]]},
+{n:6,t:"Claude u browseru",d:"Klikće, čita i skuplja podatke umesto tebe.",l:[
+ ["Osnove i dozvole","Šta sme da klikne, kako da ga nadgledaš.","Neka uporedi cenu jednog proizvoda na 2 sajta."],
+ ["Istraživanje po više sajtova","Prikupljanje i poređenje podataka u tabelu.","Tabela 10 dobavljača sa cenama i dostavom."],
+ ["Formulari i dosadni poslovi","Popunjavanje, prijave, ponavljajuće radnje.","Prepusti Claude-u jedan dosadan posao."],
+ ["Opasnosti na webu","Prompt injection, lažni sajtovi, kad stati.","Prepoznaj 3 crvene zastavice na nepoznatom sajtu."]]},
+{n:7,t:"AI za brend i dizajn",d:"Od ideje do brend knjige, reklama i videa.",l:[
+ ["Brend iz nule","Ime, misija, ton, boje i fontovi uz AI.","Završi OREUM brend knjigu kad kum izabere pravac."],
+ ["Vizuali i AI slike","Prompt za sliku, alati, tvoj stil.","Napravi 4 slike proizvoda u OREUM stilu."],
+ ["Reklame koje rade","Kuke, uglovi, struktura; analiza tuđih.","Rastavi 3 tuđe reklame i napiši 3 za LOFT."],
+ ["Motion video (Remotion)","Animirani video iz koda.","Napravi 10-sekundni teaser za OREUM."],
+ ["Prezentacije i dokumenti","Deck, ponuda, jednostranični dokument.","Napravi prezentaciju OREUM-a za kuma."]]},
+{n:8,t:"Sajtovi i aplikacije",d:"Vibe coding: pravi proizvodi bez programiranja.",l:[
+ ["Sajt, a šta aplikacija","HTML, hosting, domen, baza, jednostavno.","Nacrtaj šemu: šta treba OREUM sajtu."],
+ ["Landing stranica","Struktura koja prodaje, prva verzija za 1 sat.","Napravi landing za OREUM."],
+ ["Git i GitHub","Čuvanje verzija i vraćanje kad nešto pukne.","Stavi landing na GitHub."],
+ ["Objavljivanje na internet","GitHub Pages, Netlify, domen.","Objavi landing na pravoj adresi."],
+ ["Shopify uz AI","Prodavnica, teme, opisi, aplikacije.","Postavi test prodavnicu sa jednim proizvodom."],
+ ["Mala aplikacija","Alat za tvoj problem, kao ovaj Kamp.","Napravi aplikaciju za članove LOFT-a."]]},
+{n:9,t:"Automatizacija biznisa",d:"Posao koji se ponavlja radi sam.",l:[
+ ["Mapa ponavljajućih poslova","Šta radiš svake nedelje i šta može da se prepusti.","Lista 10 poslova sa ocenom."],
+ ["Make i n8n osnove","Povezivanje aplikacija: okidač i akcija.","Automatizuj obaveštenje za novu porudžbinu."],
+ ["Sadržaj na traci","Ideje → scenario → objava kao sistem.","Sistem za 30 LOFT objava mesečno."],
+ ["Izveštaji i brojke","Prodaja, reklame, profit na jednoj tabli.","Tabla sa brojkama za jedan test proizvod."],
+ ["Mušterije i podrška","AI odgovori, česta pitanja, ton brenda.","FAQ i šabloni odgovora za OREUM."]]},
+{n:10,t:"Unovči znanje",d:"Završna runda: znanje postaje prihod.",l:[
+ ["Istraživanje niše uz AI","Kako se bira proizvod ili usluga sa tržištem.","Proceni 3 ideje po potražnji i konkurenciji."],
+ ["Usluga: AI za lokalne firme","Šta možeš da prodaješ teretanama, salonima, radnjama.","Napravi ponudu za jednu lokalnu firmu."],
+ ["Digitalni proizvod","Kurs, šabloni, e-knjiga: struktura, cena, platforma.","Isplaniraj Claude Kamp kao proizvod za Balkan."],
+ ["Prodajni levak","Reklama → stranica → kupovina → praćenje.","Nacrtaj levak za svoj digitalni proizvod."],
+ ["Završni projekat","Jedan proizvod od ideje do prve prodaje.","Lansiraj jedan test i izmeri rezultat."]]}
+];
+const RANKS=[[0,"Početnik","🤍","#C9CDD6"],[800,"Amater","💛","#E8D23A"],[2000,"Takmičar","🧡","#F08A2B"],[3500,"Profi","❤️","#D7263D"],[5500,"Šampion","🏆","#E8B23A"],[7500,"Legenda","👑","#B98CFF"]];
+const ALL=[];PLAN.forEach(m=>m.l.forEach((x,i)=>ALL.push(m.n+"."+(i+1))));
+const KEY="kamp-v1";
+let S={done:{},sound:true};
+try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)S=Object.assign(S,s)}catch(e){}
+let openM=new Set();
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const day=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function lesson(id){const [m,i]=id.split(".").map(Number);return {m,i,x:PLAN[m-1].l[i-1]}}
+function roundDone(m){return PLAN[m-1].l.every((_,i)=>S.done[m+"."+(i+1)])}
+function xp(){let x=Object.keys(S.done).length*100;PLAN.forEach(m=>{if(roundDone(m.n))x+=250});return x}
+function rankOf(x){let r=0;RANKS.forEach((k,i)=>{if(x>=k[0])r=i});return r}
+function streak(){const days=new Set(Object.values(S.done).map(day));let d=new Date(),n=0;if(!days.has(day(d)))d.setDate(d.getDate()-1);while(days.has(day(d))){n++;d.setDate(d.getDate()-1)}return n}
+function best(){const days=[...new Set(Object.values(S.done).map(day))].sort();let b=0,c=0,prev=null;days.forEach(s=>{const t=new Date(s+"T12:00");if(prev&&(t-prev)/864e5<1.5)c++;else c=1;b=Math.max(b,c);prev=t});return b}
+function msgFor(id){const {x}=lesson(id);return `Claude Kamp, lekcija ${id}: ${x[0]}. Vodi me kroz lekciju i zadatak: ${x[2]}`}
+
+function render(){
+  const X=xp(),r=rankOf(X),R=RANKS[r],N=RANKS[r+1],nDone=Object.keys(S.done).length,st=streak(),todayOk=Object.values(S.done).some(d=>day(d)===day(new Date()));
+  const p=N?Math.round((X-R[0])/(N[0]-R[0])*100):100;
+  $("#fighter").innerHTML=`<div class="belt" style="--p:${p};--belt:${R[3]}"><span>${R[2]}</span></div>
+   <div><div class="eyebrow">Rang</div><div class="rank">${R[1]}</div><div class="xpline"><b>${X}</b> XP${N?` · još <b>${N[0]-X}</b> do ranga ${N[1]}`:" · najviši rang"}</div></div>
+   <div class="stats"><div class="stat fire"><div class="v">${st}🔥</div><div class="k">Niz dana</div></div><div class="stat"><div class="v">${nDone}/${ALL.length}</div><div class="k">Lekcije</div></div><div class="stat"><div class="v">${best()}</div><div class="k">Rekord niza</div></div></div>
+   <div class="today ${todayOk?"ok":""}">${todayOk?"✅ Današnja runda je odrađena. Niz je siguran.":st?`⚠️ Danas još nemaš lekciju. Niz od ${st} dana se prekida u ponoć.`:"🔔 Odradi jednu lekciju danas i pokreni niz."}</div>`;
+  const nx=ALL.find(id=>!S.done[id]);
+  if(nx){const {m,x}=lesson(nx);
+    $("#next").innerHTML=`<span class="eyebrow">Sledeća lekcija · ${nx} · Runda ${m}</span><h2>${esc(x[0])}</h2><p>${esc(x[1])}</p><div class="task"><b>Zadatak</b>${esc(x[2])}</div><div class="row"><button class="btn btn-w" data-copy="${nx}">Kopiraj za Claude</button><button class="btn btn-o" data-toggle="${nx}">Završio sam ✓</button></div>`;
+  } else $("#next").innerHTML=`<span class="eyebrow">Kamp završen</span><h2>Svih ${ALL.length} lekcija je gotovo 👑</h2><p>Vreme je da znanje pretvoriš u proizvod.</p>`;
+  $("#planCount").textContent=PLAN.filter(m=>roundDone(m.n)).length+"/10 rundi";
+  $("#rounds").innerHTML=PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length;return `<i class="${c===m.l.length?"f":c?"p":""}"></i>`}).join("");
+  $("#modules").innerHTML=PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length,full=c===m.l.length,o=openM.has(m.n);
+    return `<section class="module ${full?"full":""}"><button class="mhead" data-m="${m.n}" aria-expanded="${o}"><span class="rn">${full?"✓":"R"+m.n}</span><span class="mt"><h3>${esc(m.t)}</h3><p>${esc(m.d)}</p><div class="mbar"><i style="width:${c/m.l.length*100}%"></i></div></span><span class="mc">${c}/${m.l.length}</span></button>${o?`<div class="lessons">${m.l.map((x,i)=>{const id=m.n+"."+(i+1),d=!!S.done[id];
+      return `<div class="lesson ${d?"done":""}"><button class="chk" data-toggle="${id}" aria-pressed="${d}" aria-label="Lekcija ${id} završena">${d?"✓":""}</button><div><div class="lt"><span class="id">${id}</span>${esc(x[0])}</div><p class="ld">${esc(x[1])}</p><div class="lk"><b>Zadatak</b>${esc(x[2])}</div><button class="copy" data-copy="${id}">Kopiraj za Claude</button></div></div>`}).join("")}</div>`:""}</section>`}).join("");
+  $("#ranks").innerHTML=RANKS.map((k,i)=>`<div class="rk ${i<=r?"on":""}"><div class="e">${k[2]}</div><div class="n">${k[1]}</div><div class="x">${k[0]} XP</div></div>`).join("");
+  $("#btnSound").textContent=S.sound?"🔊 Zvuk uključen":"🔇 Zvuk isključen";
+}
+
+/* Zvuk gonga i konfete */
+let AC=null;
+function bell(times){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();for(let k=0;k<times;k++){const t=AC.currentTime+k*.28;[880,1320,1760].forEach((f,j)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25/(j+1),t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+1.3)})}}catch(e){}}
+function confetti(n){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const c=$("#fx"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;const cols=["#D7263D","#E8B23A","#FFFFFF","#3DBE7E"];const P=Array.from({length:n},()=>({x:c.width/2,y:c.height*.4,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,r:Math.random()*6+3,c:cols[Math.random()*4|0],a:Math.random()*6}));let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.a+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore()});if(++f<110)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})()}
+function win(title,sub){const w=$("#win");w.innerHTML=`<div>${esc(title)}<small>${esc(sub)}</small></div>`;w.hidden=false;clearTimeout(w._t);w._t=setTimeout(()=>w.hidden=true,1900)}
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2000)}
+async function copy(t){try{await navigator.clipboard.writeText(t);toast("Kopirano. Nalepi u chat sa Claude-om.")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Kopirano.")}catch(_){toast("Označi tekst i kopiraj ručno.")}ta.remove()}}
+
+function toggle(id){
+  const m=+id.split(".")[0];
+  if(S.done[id]){delete S.done[id];save();render();toast("Lekcija "+id+" vraćena.");return}
+  const r0=rankOf(xp()),wasRound=roundDone(m);
+  S.done[id]=new Date().toISOString();save();openM.add(m);
+  const r1=rankOf(xp());
+  try{navigator.vibrate&&navigator.vibrate(roundDone(m)&&!wasRound?[80,60,80,60,200]:60)}catch(e){}
+  if(r1>r0){bell(3);confetti(220);win("Novi rang: "+RANKS[r1][1]+" "+RANKS[r1][2],"Svaka čast, Uroše!")}
+  else if(roundDone(m)&&!wasRound){bell(3);confetti(160);win("Runda "+m+" dobijena! 🥊","+250 XP bonus")}
+  else{bell(1);confetti(50);toast("+100 XP · lekcija "+id+" gotova 💪")}
+  render();
+}
+document.addEventListener("click",e=>{
+  const t=e.target.closest("[data-toggle]");if(t){toggle(t.dataset.toggle);return}
+  const c=e.target.closest("[data-copy]");if(c){copy(msgFor(c.dataset.copy));return}
+  const h=e.target.closest(".mhead");if(h){const n=+h.dataset.m;openM.has(n)?openM.delete(n):openM.add(n);render()}
+});
+$("#btnInfo").onclick=()=>$("#sheet").hidden=false;
+$("#btnClose").onclick=()=>$("#sheet").hidden=true;
+$("#sheet").onclick=e=>{if(e.target.id==="sheet")$("#sheet").hidden=true};
+$("#btnSound").onclick=()=>{S.sound=!S.sound;save();render()};
+$("#btnSummary").onclick=()=>{const ids=ALL.filter(id=>S.done[id]);copy(`Claude Kamp napredak: ${ids.length}/${ALL.length} lekcija, ${xp()} XP, rang ${RANKS[rankOf(xp())][1]}, niz ${streak()} dana. Završene: ${ids.join(", ")||"nijedna"}.`)};
+const first=ALL.find(id=>!S.done[id]);openM.add(first?+first.split(".")[0]:1);
+render();
+if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
+</script>
+</body>
+</html>
