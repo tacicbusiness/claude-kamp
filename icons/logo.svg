@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+ <radialGradient id="bg" cx=".5" cy=".55" r=".6"><stop offset="0" stop-color="#3A0E16"/><stop offset=".7" stop-color="#140A0D"/><stop offset="1" stop-color="#0B0B0E"/></radialGradient>
+ <linearGradient id="glove" x1=".15" y1=".05" x2=".85" y2=".95"><stop offset="0" stop-color="#FF4A60"/><stop offset=".45" stop-color="#D7263D"/><stop offset="1" stop-color="#8E1426"/></linearGradient>
+ <linearGradient id="thumb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8344B"/><stop offset="1" stop-color="#9E1729"/></linearGradient>
+ <linearGradient id="cuff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#C9CDD6"/></linearGradient>
+ <radialGradient id="spark" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE9A8"/><stop offset=".5" stop-color="#E8B23A" stop-opacity=".55"/><stop offset="1" stop-color="#E8B23A" stop-opacity="0"/></radialGradient>
+ <filter id="sh" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="14" stdDeviation="14" flood-color="#000" flood-opacity=".55"/></filter>
+</defs>
+<rect width="512" height="512" fill="url(#bg)"/>
+<g filter="url(#sh)" transform="translate(-6 8) rotate(-14 256 270)">
+ <!-- telo rukavice -->
+ <path d="M196 352 C150 330 128 262 140 206 C154 140 210 104 276 104 C348 104 396 150 398 214 C400 268 380 318 344 352 Z" fill="url(#glove)" stroke="#5E0B17" stroke-width="7" stroke-linejoin="round"/>
+ <!-- linija prstiju -->
+ <path d="M168 238 C220 214 300 208 372 226" fill="none" stroke="#7A1222" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+ <!-- palac -->
+ <path d="M176 344 C146 312 140 262 162 238 C184 216 236 222 262 250 C282 272 274 300 248 306 C226 311 214 324 214 346 Z" fill="url(#thumb)" stroke="#5E0B17" stroke-width="7" stroke-linejoin="round"/>
+ <path d="M172 250 C196 238 228 242 250 262" fill="none" stroke="#FF8796" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+ <!-- odsjaj -->
+ <path d="M220 136 C258 118 318 120 350 150" fill="none" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" opacity=".35"/>
+ <ellipse cx="236" cy="136" rx="10" ry="7" fill="#fff" opacity=".6"/>
+ <!-- šav između tela i manžetne -->
+ <path d="M188 346 C236 362 300 362 352 346" fill="none" stroke="#5E0B17" stroke-width="10" stroke-linecap="round"/>
+ <!-- manžetna -->
+ <path d="M190 352 L354 352 L346 438 C300 450 244 450 198 438 Z" fill="url(#cuff)" stroke="#2A2E38" stroke-width="6" stroke-linejoin="round"/>
+ <path d="M272 362 L272 438" stroke="#9AA0AD" stroke-width="4"/>
+ <g stroke="#D7263D" stroke-width="7" stroke-linecap="round">
+  <path d="M252 374 L292 392"/><path d="M292 374 L252 392"/>
+  <path d="M252 404 L292 422"/><path d="M292 404 L252 422"/>
+ </g>
+</g>
+<!-- AI iskre -->
+<circle cx="404" cy="112" r="70" fill="url(#spark)"/>
+<path d="M404 58 Q411 104 458 112 Q411 120 404 166 Q397 120 350 112 Q397 104 404 58Z" fill="#F5C64E" stroke="#FFF3CF" stroke-width="3"/>
+<path d="M454 186 Q457 203 474 206 Q457 209 454 226 Q451 209 434 206 Q451 203 454 186Z" fill="#F5C64E"/>
+<path d="M344 52 Q346 62 356 64 Q346 66 344 76 Q342 66 332 64 Q342 62 344 52Z" fill="#F5C64E" opacity=".8"/>
+</svg>
