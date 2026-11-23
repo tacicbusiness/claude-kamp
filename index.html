@@ -11,34 +11,37 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;100,600;125,800;125,900&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Ring: tamna arena, crveni ugao, zlato za rang. Gore "kartica borca" (rang, XP, niz), pa sledeća runda, pa plan po rundama. */
+/* Ring: tamna arena, crveni ugao, zlato za rang. Pet ekrana preko donje trake: Trening, Plan, Sveska, Rečnik, Profil. */
 :root{
   --bg:#0E0F12; --surface:#17191F; --surface2:#20232B; --ink:#F1F2F5; --muted:#8E94A3; --line:#2A2E38;
-  --red:#D7263D; --red-soft:#3A161C; --gold:#E8B23A; --gold-soft:#3A2E12; --green:#3DBE7E; --green-soft:#13301F;
+  --red:#D7263D; --red-soft:#3A161C; --gold:#E8B23A; --gold-soft:#3A2E12; --green:#3DBE7E; --green-soft:#13301F; --blue:#5B8CFF; --blue-soft:#18213A;
   --display:"Archivo",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
   color-scheme:dark;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html,body{margin:0}
+html{scroll-padding-bottom:calc(90px + env(safe-area-inset-bottom,0px))}
 body{background:var(--bg);color:var(--ink);font-family:var(--display);font-stretch:100%;font-size:15px;line-height:1.5;
-  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(48px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
-  background-image:radial-gradient(ellipse 120% 50% at 50% -10%,#2a1218 0%,transparent 60%)}
+  padding:calc(16px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(96px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background-image:radial-gradient(ellipse 120% 50% at 50% -10%,#2a1218 0%,transparent 60%);background-attachment:fixed}
 .wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 h1,h2,h3{margin:0;font-stretch:125%;text-wrap:balance}
-.mono{font-family:var(--mono)}
 .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;color:inherit;background:none}
-button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input,textarea{font:inherit;color:var(--ink);background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+textarea{min-height:150px;resize:vertical}
+.muted{color:var(--muted)}
 
 .top{display:flex;justify-content:space-between;align-items:center}
-.logo{font-weight:900;font-size:22px;letter-spacing:.02em;text-transform:uppercase;font-stretch:125%}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:22px;letter-spacing:.02em;text-transform:uppercase;font-stretch:125%}
 .logo b{color:var(--red)}
-.logo{display:flex;align-items:center;gap:10px}
 .logo img{border-radius:9px;display:block}
-.iconbtn{width:40px;height:40px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line)}
+.viewtitle{font-size:24px;font-weight:900;text-transform:uppercase}
 
-.fighter{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.fighter{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
 .belt{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;position:relative;background:conic-gradient(var(--belt) calc(var(--p)*1%),var(--line) 0)}
 .belt::before{content:"";position:absolute;inset:7px;border-radius:50%;background:var(--surface)}
 .belt span{position:relative;font-size:30px}
@@ -54,18 +57,26 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .today.ok{background:var(--green-soft);color:#9be7bf}
 
 .next{border-radius:16px;padding:18px;background:linear-gradient(135deg,#B81D33,#7A1222);display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
-.next::after{content:"🥊";position:absolute;right:-8px;bottom:-14px;font-size:96px;opacity:.15;transform:rotate(-15deg)}
+.next::after{content:"🥊";position:absolute;right:-8px;bottom:-14px;font-size:96px;opacity:.15;transform:rotate(-15deg);pointer-events:none}
 .next .eyebrow{color:#ffd0d6}
 .next h2{font-size:24px;font-weight:900;line-height:1.1}
 .next p{margin:0;color:#ffe3e7;max-width:56ch}
 .next .task{background:rgba(0,0,0,.22);border-radius:10px;padding:10px 12px;font-size:14px}
 .next .task b{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-right:6px;color:#ffd0d6}
-.row{display:flex;gap:8px;flex-wrap:wrap}
+.steps{margin:0;padding-left:20px;font-size:13px;color:#ffe3e7;display:flex;flex-direction:column;gap:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .btn{padding:12px 16px;font-weight:700;border-radius:10px}
 .btn-w{background:#fff;color:#7A1222}
 .btn-o{background:rgba(255,255,255,.12);color:#fff}
+.btn-r{background:var(--red);color:#fff}
+.btn-g{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-.secthead{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px}
+.review{border-left:4px solid var(--blue);display:flex;flex-direction:column;gap:8px}
+.review .eyebrow{color:var(--blue)}
+.review h3{font-size:17px;font-weight:800;font-stretch:110%}
+
+.secthead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .secthead h3{font-size:16px;font-weight:900;text-transform:uppercase}
 .rounds{display:grid;grid-template-columns:repeat(10,1fr);gap:4px}
 .rounds i{height:8px;border-radius:4px;background:var(--line)}
@@ -83,11 +94,8 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .mbar i{display:block;height:100%;background:var(--red)}
 .module.full .mbar i{background:var(--green)}
 .mc{font-family:var(--mono);font-size:12px;color:var(--muted)}
-.lessons{border-top:1px solid var(--line)}
 .lesson{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:12px 14px;border-top:1px solid var(--line)}
-.lesson:first-child{border-top:0}
-.chk{width:30px;height:30px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font-weight:900;color:#0E0F12;transition:transform .15s}
-.chk:active{transform:scale(.85)}
+.chk{width:30px;height:30px;border-radius:50%;border:2px solid var(--muted);display:grid;place-items:center;font-weight:900;color:#0E0F12}
 .lesson.done .chk{background:var(--green);border-color:var(--green)}
 .lt{font-weight:700}
 .lt .id{font-family:var(--mono);font-size:11px;color:var(--muted);margin-right:6px}
@@ -95,28 +103,67 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .ld{margin:2px 0 6px;font-size:13px;color:var(--muted)}
 .lk{font-size:13px;background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .lk b{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--red);margin-right:6px}
-.copy{font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
+.small{font-size:13px;padding:6px 10px;border:1px solid var(--line);border-radius:8px}
 
-.ranks{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}
+.note{display:flex;flex-direction:column;gap:6px}
+.note .nt{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.note .nt b{font-weight:800}
+.note .nd{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.note .nb{white-space:pre-wrap;font-size:14px;color:#d5d8df;overflow-wrap:anywhere}
+.note .nb.clip{max-height:4.6em;overflow:hidden;-webkit-mask-image:linear-gradient(#000 60%,transparent)}
+.empty{text-align:center;color:var(--muted);padding:28px 16px}
+
+.term{display:flex;flex-direction:column;gap:4px}
+.term b{font-size:16px;font-weight:800}
+.term p{margin:0;font-size:14px;color:#d5d8df}
+.term .src{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.term.locked b{color:var(--muted)} .term.locked p{color:var(--muted)}
+.list{display:flex;flex-direction:column;gap:8px}
+
+.ranks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .rk{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;opacity:.45}
 .rk.on{opacity:1;border-color:var(--gold)}
 .rk .e{font-size:24px} .rk .n{font-weight:800;font-size:13px} .rk .x{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.badges{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.bd{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;align-items:center}
+.bd .e{font-size:28px;filter:grayscale(1);opacity:.35}
+.bd.on{border-color:var(--gold);background:linear-gradient(180deg,var(--gold-soft),var(--surface))}
+.bd.on .e{filter:none;opacity:1}
+.bd .n{font-weight:800;font-size:13px}
+.bd .d{font-size:11px;color:var(--muted);line-height:1.3}
 
-.sheet{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
-.sheet>div{background:var(--surface);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;max-height:85vh;overflow:auto}
+.cal{overflow-x:auto}
+.calgrid{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);gap:3px;width:max-content}
+.calgrid i{width:14px;height:14px;border-radius:3px;background:var(--surface2)}
+.calgrid i.l1{background:#5a1c26}.calgrid i.l2{background:#a01f33}.calgrid i.l3{background:#ff4a60}
+.calgrid i.t{outline:2px solid var(--gold);outline-offset:-1px}
+.legend{display:flex;gap:4px;align-items:center;font-size:11px;color:var(--muted);margin-top:8px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(14,15,18,.94);backdrop-filter:blur(10px);border-top:1px solid var(--line);
+  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))}
+.tabbar .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:11px;color:var(--muted);position:relative}
+.tab .i{font-size:20px;line-height:1;filter:grayscale(1);opacity:.7}
+.tab.on{color:var(--ink)} .tab.on .i{filter:none;opacity:1}
+.tab.on::before{content:"";position:absolute;top:-6px;width:28px;height:3px;border-radius:2px;background:var(--red)}
+.dot{position:absolute;top:2px;right:calc(50% - 18px);min-width:16px;height:16px;border-radius:8px;background:var(--blue);color:#fff;font-size:10px;font-family:var(--mono);display:grid;place-items:center;padding:0 4px}
+
+.sheet{position:fixed;inset:0;background:rgba(0,0,0,.65);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet>div{background:var(--surface);width:100%;max-width:720px;border-radius:18px 18px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px;max-height:90vh;overflow:auto}
 .sheet h3{font-size:18px;font-weight:900;text-transform:uppercase}
-.sheet p,.sheet li{color:var(--muted);font-size:14px;margin:0}
-.sheet ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.btn-r{background:var(--red);color:#fff}
-.btn-g{background:var(--surface2);color:var(--ink)}
+.sheet p{color:var(--muted);font-size:14px;margin:0}
+.count{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
+.count.ok{color:var(--green)}
 
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:40;max-width:calc(100% - 32px);text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;opacity:0;transition:.25s;pointer-events:none;z-index:40;max-width:calc(100% - 32px);text-align:center}
 .toast.on{opacity:1;transform:translate(-50%,0)}
 .win{position:fixed;inset:0;display:grid;place-items:center;z-index:30;pointer-events:none}
-.win div{background:var(--gold);color:#1a1300;font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:28px;padding:18px 26px;border-radius:14px;text-align:center;animation:pop 1.8s ease forwards;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.win div{background:var(--gold);color:#1a1300;font-weight:900;font-stretch:125%;text-transform:uppercase;font-size:26px;padding:18px 26px;border-radius:14px;text-align:center;animation:pop 1.8s ease forwards;box-shadow:0 20px 60px rgba(0,0,0,.5);max-width:calc(100% - 40px)}
 .win small{display:block;font-size:14px;font-weight:600;font-stretch:100%;text-transform:none}
 @keyframes pop{0%{transform:scale(.3);opacity:0}15%{transform:scale(1.08);opacity:1}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(.95)}}
 canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:29}
+@media (max-width:380px){.ranks,.badges{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:reduce){.win div{animation:none}.toast{transition:none}}
 </style>
 </head>
@@ -124,39 +171,20 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 <div class="wrap">
   <div class="top">
     <div class="logo"><img src="icons/logo.svg" alt="" width="36" height="36">Claude <b>Kamp</b></div>
-    <div class="row">
-      <button class="iconbtn" id="btnInfo" aria-label="Podešavanja i pomoć">⚙️</button>
-    </div>
   </div>
-
-  <section class="fighter" id="fighter"></section>
-  <section class="next" id="next"></section>
-
-  <div class="secthead"><h3>Plan borbe</h3><span class="eyebrow" id="planCount"></span></div>
-  <div class="rounds" id="rounds"></div>
-  <main id="modules" style="display:flex;flex-direction:column;gap:10px"></main>
-
-  <div class="secthead"><h3>Rangovi</h3><span class="eyebrow">100 XP po lekciji · +250 za rundu</span></div>
-  <div class="ranks" id="ranks"></div>
+  <div id="view"></div>
 </div>
 
-<div class="sheet" id="sheet" hidden><div>
-  <h3>Kamp · podešavanja</h3>
-  <p><b style="color:var(--ink)">Kako se uči:</b> klikni „Kopiraj za Claude“, nalepi poruku u chat sa Claude-om i on te vodi kroz lekciju. Kad završiš, štikliraj je.</p>
-  <p><b style="color:var(--ink)">Podsetnici</b> stižu u 8h i 21h preko aplikacije ntfy (link za prijavu ti je dao Claude u chatu).</p>
-  <div class="row">
-    <button class="btn btn-g" id="btnSummary">Kopiraj napredak za Claude</button>
-    <button class="btn btn-g" id="btnSound"></button>
-  </div>
-  <p>Napredak se čuva na ovom telefonu. Ne briši podatke pregledača za ovu stranicu.</p>
-  <button class="btn btn-r" id="btnClose">Zatvori</button>
-</div></div>
+<nav class="tabbar" aria-label="Glavni meni"><div class="in" id="tabs"></div></nav>
 
+<div class="sheet" id="sheet" hidden><div id="sheetBody"></div></div>
+<input type="file" id="fileIn" accept="application/json,.json" hidden>
 <canvas id="fx"></canvas>
 <div class="win" id="win" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
+const DONE_TOPIC="ckd-2cb1e9017cd4026c";
 const PLAN=[
 {n:1,t:"Kako AI zapravo radi",d:"Šta je ispred tebe, gde greši i kako da proveriš.",l:[
  ["Šta je jezički model","Kako Claude „misli“, šta zna i šta ne zna, šta je kontekst.","Objasni mi svojim rečima šta je kontekst i zašto ga ja pamtim u memoriji."],
@@ -219,78 +247,305 @@ const PLAN=[
  ["Prodajni levak","Reklama → stranica → kupovina → praćenje.","Nacrtaj levak za svoj digitalni proizvod."],
  ["Završni projekat","Jedan proizvod od ideje do prve prodaje.","Lansiraj jedan test i izmeri rezultat."]]}
 ];
+const TERMS=[
+["1.1","Jezički model (LLM)","Program koji je učio na ogromnoj količini teksta i predviđa sledeću reč. Claude je jezički model."],
+["1.1","Kontekst","Sve što model „vidi“ u jednom razgovoru: tvoje poruke, fajlove i uputstva. Šta nije u kontekstu, model ne zna."],
+["1.1","Token","Komadić teksta (deo reči) kojim model računa. Limiti i cene se mere u tokenima."],
+["1.2","Halucinacija","Kada AI samouvereno izmisli podatak, izvor ili broj koji ne postoji."],
+["1.2","Provera izvora","Traženje originalnog izvora za tvrdnju pre nego što je iskoristiš."],
+["1.3","Model (Opus, Sonnet, Haiku)","Različite „težinske kategorije“ Claude-a: Opus je najjači, Sonnet brz i pametan, Haiku najbrži i najjeftiniji."],
+["1.3","Limit korišćenja","Koliko rada plan dozvoljava u određenom periodu; duži razgovori i jači modeli troše više."],
+["1.4","Prompt injection","Skrivena uputstva u tekstu, sajtu ili fajlu koja pokušavaju da nateraju AI da radi nešto što ti nisi tražio."],
+["1.4","Osetljivi podaci","Lozinke, brojevi kartica i lični podaci kupaca. Ne daješ ih AI-ju bez potrebe."],
+["2.1","Prompt","Uputstvo ili pitanje koje daješ AI-ju."],
+["2.1","Uloga","Deo prompta koji kaže AI-ju iz koje pozicije da radi, npr. „ti si iskusan copywriter“."],
+["2.2","Few-shot","Tehnika gde AI-ju daš nekoliko primera, pa on nastavi u istom stilu."],
+["2.3","Iteracija","Doterivanje rezultata kroz više krugova povratnih informacija."],
+["2.4","Šablon prompta","Gotov prompt sa praznim mestima koji koristiš iznova za isti posao."],
+["2.5","Ulizivanje (sycophancy)","Sklonost AI-ja da ti povlađuje. Rešava se kad izričito tražiš kritiku."],
+["3.1","Project","Radni prostor u Claude.ai sa stalnim uputstvima i fajlovima za jednu temu ili biznis."],
+["3.1","Sistemska uputstva","Pravila koja važe za ceo projekat, pa ih ne ponavljaš u svakoj poruci."],
+["3.2","Memorija","Ono što Claude pamti o tebi između razgovora."],
+["3.3","Multimodalnost","Kada AI razume i slike, PDF-ove i snimke ekrana, a ne samo tekst."],
+["3.4","Web pretraga","Claude traži na internetu sveže informacije pre odgovora."],
+["3.4","Deep research","Dugo istraživanje kroz mnogo izvora sa izveštajem na kraju."],
+["3.5","Artifact","Stranica, alat ili dokument koji Claude napravi i koji možeš da otvoriš i deliš."],
+["4.1","Agent","AI koji sam izvršava korake (otvara fajlove, pokreće komande), a ne samo odgovara."],
+["4.1","Claude Code","Claude kao agent koji radi na tvom računaru: fajlovi, terminal, alati."],
+["4.2","Putanja (path)","Adresa fajla na računaru, npr. C:\\Users\\Nenad\\Desktop\\fajl.pdf."],
+["4.3","Terminal","Prozor gde se računaru daju komande tekstom."],
+["4.3","Komanda","Jedna naredba u terminalu, npr. kopiraj, pokreni ili napravi folder."],
+["4.4","Dozvole","Pravila šta Claude sme da uradi sam, a za šta te pita."],
+["4.5","CLAUDE.md","Fajl u projektu sa uputstvima koja Claude pročita na početku svakog rada."],
+["5.1","Plan mod","Režim u kom Claude prvo napravi plan i čeka tvoje odobrenje pre izvršenja."],
+["5.2","Skill","Paket uputstava za određen posao koji Claude učita kad zatreba."],
+["5.2","Slash komanda","Prečica koja počinje kosom crtom, npr. /reklama."],
+["5.3","MCP","Standard kojim se Claude povezuje sa drugim alatima: Chrome, Drive, Gmail…"],
+["5.4","Subagent","Pomoćni AI radnik kome Claude preda deo posla; može ih raditi više paralelno."],
+["5.5","Hook","Automatska radnja koja se pokrene kad se nešto desi, npr. posle svake izmene fajla."],
+["5.6","Cron / zakazani zadatak","Posao koji se sam pokreće u zadato vreme, kao tvoji podsetnici u 8h i 21h."],
+["6.1","Browser agent","AI koji upravlja pregledačem: klikće, kuca i čita stranice."],
+["6.2","Scraping","Automatsko prikupljanje podataka sa sajtova."],
+["6.3","Automatizacija formulara","AI popunjava i šalje formulare umesto tebe."],
+["6.4","Phishing","Lažna stranica ili poruka koja glumi pravu da bi ukrala podatke."],
+["7.1","Brend knjiga","Dokument sa pravilima brenda: logo, boje, fontovi, ton i primeri."],
+["7.2","Prompt za sliku","Opis koji AI pretvara u sliku: predmet, stil, svetlo, kadar."],
+["7.3","Kuka (hook)","Prve 1–3 sekunde reklame koje zaustave skrolovanje."],
+["7.3","Ugao (angle)","Iz kog razloga ili problema prodaješ isti proizvod različitim ljudima."],
+["7.4","Remotion","Alat koji pravi video iz koda; tako smo pravili motion snimke."],
+["7.5","Deck","Prezentacija u slajdovima za ponudu ili predstavljanje."],
+["8.1","Hosting","Računar na internetu na kom „živi“ tvoj sajt."],
+["8.1","Domen","Adresa sajta, npr. oreumskin.com."],
+["8.2","Landing stranica","Jedna stranica napravljena za jedan cilj: prodaju ili prijavu."],
+["8.2","CTA","Poziv na akciju, dugme poput „Kupi sada“."],
+["8.3","Git","Sistem koji pamti svaku verziju koda, pa možeš da se vratiš unazad."],
+["8.3","Repozitorijum (repo)","Folder projekta na GitHub-u sa celom istorijom izmena."],
+["8.3","Commit","Jedno sačuvano stanje projekta sa opisom šta je promenjeno."],
+["8.4","Deploy","Objavljivanje nove verzije sajta ili aplikacije na internetu."],
+["8.5","Shopify","Platforma za online prodavnicu."],
+["8.6","PWA","Sajt koji se instalira kao aplikacija na telefon, kao ovaj Kamp."],
+["9.1","Workflow","Niz koraka koji se ponavlja istim redom."],
+["9.2","Okidač (trigger)","Događaj koji pokreće automatizaciju, npr. nova porudžbina."],
+["9.2","Webhook","Adresa na koju jedna aplikacija šalje obaveštenje drugoj kad se nešto desi."],
+["9.3","Content kalendar","Plan objava po danima."],
+["9.4","KPI","Ključni broj koji pratiš da znaš da li ide dobro, npr. cena po kupovini."],
+["9.5","Ton brenda","Način na koji brend govori: ozbiljno, opušteno, duhovito…"],
+["10.1","Niša","Uska grupa kupaca sa zajedničkim problemom."],
+["10.2","Ponuda (offer)","Šta tačno dobijaju, za koliko i zašto baš od tebe."],
+["10.3","Digitalni proizvod","Proizvod bez magacina: kurs, šabloni, e-knjiga, aplikacija."],
+["10.4","Prodajni levak","Put kupca od prvog viđenja reklame do kupovine."],
+["10.5","MVP","Najjednostavnija verzija proizvoda koja može da se testira na pravim kupcima."]
+];
 const RANKS=[[0,"Početnik","🤍","#C9CDD6"],[800,"Amater","💛","#E8D23A"],[2000,"Takmičar","🧡","#F08A2B"],[3500,"Profi","❤️","#D7263D"],[5500,"Šampion","🏆","#E8B23A"],[7500,"Legenda","👑","#B98CFF"]];
 const ALL=[];PLAN.forEach(m=>m.l.forEach((x,i)=>ALL.push(m.n+"."+(i+1))));
+const MIN_NOTE=60, XP_L=100, XP_R=250, XP_REV=50;
 const KEY="kamp-v1";
-let S={done:{},sound:true};
+
+/* ---------- stanje ---------- */
+let S={done:{},rev:{},sound:true,badges:[],lastBackup:null,pendingPing:null};
 try{const s=JSON.parse(localStorage.getItem(KEY)||"null");if(s)S=Object.assign(S,s)}catch(e){}
-let openM=new Set();
+for(const k in S.done){if(typeof S.done[k]==="string")S.done[k]={t:S.done[k],note:""}}
+S.rev=S.rev||{};S.badges=S.badges||[];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("Napredak nije sačuvan. Proveri memoriju telefona.")}}
+
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const day=d=>{const x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")};
-function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const fmt=d=>{const x=new Date(d);return x.getDate()+"."+(x.getMonth()+1)+"."};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 function lesson(id){const [m,i]=id.split(".").map(Number);return {m,i,x:PLAN[m-1].l[i-1]}}
 function roundDone(m){return PLAN[m-1].l.every((_,i)=>S.done[m+"."+(i+1)])}
-function xp(){let x=Object.keys(S.done).length*100;PLAN.forEach(m=>{if(roundDone(m.n))x+=250});return x}
+function revCount(){let n=0;for(const k in S.rev)n+=(S.rev[k].ok||0);return n}
+function xp(){let x=Object.keys(S.done).length*XP_L+revCount()*XP_REV;PLAN.forEach(m=>{if(roundDone(m.n))x+=XP_R});return x}
 function rankOf(x){let r=0;RANKS.forEach((k,i)=>{if(x>=k[0])r=i});return r}
-function streak(){const days=new Set(Object.values(S.done).map(day));let d=new Date(),n=0;if(!days.has(day(d)))d.setDate(d.getDate()-1);while(days.has(day(d))){n++;d.setDate(d.getDate()-1)}return n}
-function best(){const days=[...new Set(Object.values(S.done).map(day))].sort();let b=0,c=0,prev=null;days.forEach(s=>{const t=new Date(s+"T12:00");if(prev&&(t-prev)/864e5<1.5)c++;else c=1;b=Math.max(b,c);prev=t});return b}
-function msgFor(id){const {x}=lesson(id);return `Claude Kamp, lekcija ${id}: ${x[0]}. Vodi me kroz lekciju i zadatak: ${x[2]}`}
+function activeDays(){return new Set(Object.values(S.done).map(v=>day(v.t)))}
+function streak(){const days=activeDays();let d=new Date(),n=0;if(!days.has(day(d)))d.setDate(d.getDate()-1);while(days.has(day(d))){n++;d.setDate(d.getDate()-1)}return n}
+function best(){const days=[...activeDays()].sort();let b=0,c=0,prev=null;days.forEach(s=>{const t=new Date(s+"T12:00");if(prev&&(t-prev)/864e5<1.5)c++;else c=1;b=Math.max(b,c);prev=t});return b}
+function todayOk(){return activeDays().has(day(new Date()))}
+function msgFor(id){const {x}=lesson(id);return `Claude Kamp, lekcija ${id}: ${x[0]}. Vodi me kroz lekciju i zadatak: ${x[2]}. Na kraju mi postavi 3 pitanja, pa napiši kratak rezime (pitanja, moji odgovori i šta sam naučio) da ga nalepim u belešku.`}
+function dueReviews(){const now=new Date();return Object.keys(S.rev).filter(id=>S.done[id]&&S.rev[id].next&&new Date(S.rev[id].next)<=now).sort((a,b)=>new Date(S.rev[a].next)-new Date(S.rev[b].next))}
+function unlockedTerms(){return TERMS.filter(t=>S.done[t[0]])}
 
-function render(){
-  const X=xp(),r=rankOf(X),R=RANKS[r],N=RANKS[r+1],nDone=Object.keys(S.done).length,st=streak(),todayOk=Object.values(S.done).some(d=>day(d)===day(new Date()));
+/* ---------- bedževi ---------- */
+const BADGES=[
+ ["prvi","👊","Prvi udarac","Završi prvu lekciju",()=>Object.keys(S.done).length>=1],
+ ["runda","🥊","Runda dobijena","Završi celu rundu",()=>PLAN.some(m=>roundDone(m.n))],
+ ["niz3","🔥","Zagrejan","Niz od 3 dana",()=>best()>=3],
+ ["niz7","⚡","Nedelja bez pauze","Niz od 7 dana",()=>best()>=7],
+ ["niz30","💎","Gvozdena volja","Niz od 30 dana",()=>best()>=30],
+ ["rano","🌅","Ranoranilac","Lekcija pre 9h",()=>Object.values(S.done).some(v=>new Date(v.t).getHours()<9)],
+ ["nocna","🌙","Noćna ptica","Lekcija posle 22h",()=>Object.values(S.done).some(v=>new Date(v.t).getHours()>=22)],
+ ["maraton","🏃","Maraton","3 lekcije u jednom danu",()=>{const c={};Object.values(S.done).forEach(v=>{const d=day(v.t);c[d]=(c[d]||0)+1});return Object.values(c).some(n=>n>=3)}],
+ ["pisac","✍️","Pisac","10 beleški dužih od 300 znakova",()=>Object.values(S.done).filter(v=>(v.note||"").length>=300).length>=10],
+ ["pamtisa","🧠","Pamtiša","5 uspešnih ponavljanja",()=>revCount()>=5],
+ ["recnik","📖","Rečnik","Otključaj 25 pojmova",()=>unlockedTerms().length>=25],
+ ["pola","🥈","Pola puta","25 završenih lekcija",()=>Object.keys(S.done).length>=25],
+ ["sampion","🏆","Šampion","Svih 50 lekcija",()=>Object.keys(S.done).length>=ALL.length],
+ ["sigurno","💾","Na sigurnom","Napravi rezervnu kopiju",()=>!!S.lastBackup]
+];
+function newBadges(){const got=BADGES.filter(b=>b[4]()).map(b=>b[0]);const fresh=got.filter(id=>!S.badges.includes(id));S.badges=got;return fresh.map(id=>BADGES.find(b=>b[0]===id))}
+
+/* ---------- prikazi ---------- */
+let VIEW="trening", openM=new Set(), q={sveska:"",recnik:""}, revShow={};
+const TABS=[["trening","🥊","Trening"],["plan","🗺️","Plan"],["sveska","📓","Sveska"],["recnik","📖","Rečnik"],["profil","🏆","Profil"]];
+function renderTabs(){const due=dueReviews().length;$("#tabs").innerHTML=TABS.map(t=>`<button class="tab ${VIEW===t[0]?"on":""}" data-tab="${t[0]}" aria-current="${VIEW===t[0]?"page":"false"}"><span class="i">${t[1]}</span>${t[2]}${t[0]==="trening"&&due?`<span class="dot">${due}</span>`:""}</button>`).join("")}
+
+function fighterHTML(){
+  const X=xp(),r=rankOf(X),R=RANKS[r],N=RANKS[r+1],nDone=Object.keys(S.done).length,st=streak(),ok=todayOk();
   const p=N?Math.round((X-R[0])/(N[0]-R[0])*100):100;
-  $("#fighter").innerHTML=`<div class="belt" style="--p:${p};--belt:${R[3]}"><span>${R[2]}</span></div>
+  return `<section class="card fighter"><div class="belt" style="--p:${p};--belt:${R[3]}"><span>${R[2]}</span></div>
    <div><div class="eyebrow">Rang</div><div class="rank">${R[1]}</div><div class="xpline"><b>${X}</b> XP${N?` · još <b>${N[0]-X}</b> do ranga ${N[1]}`:" · najviši rang"}</div></div>
    <div class="stats"><div class="stat fire"><div class="v">${st}🔥</div><div class="k">Niz dana</div></div><div class="stat"><div class="v">${nDone}/${ALL.length}</div><div class="k">Lekcije</div></div><div class="stat"><div class="v">${best()}</div><div class="k">Rekord niza</div></div></div>
-   <div class="today ${todayOk?"ok":""}">${todayOk?"✅ Današnja runda je odrađena. Niz je siguran.":st?`⚠️ Danas još nemaš lekciju. Niz od ${st} dana se prekida u ponoć.`:"🔔 Odradi jednu lekciju danas i pokreni niz."}</div>`;
-  const nx=ALL.find(id=>!S.done[id]);
-  if(nx){const {m,x}=lesson(nx);
-    $("#next").innerHTML=`<span class="eyebrow">Sledeća lekcija · ${nx} · Runda ${m}</span><h2>${esc(x[0])}</h2><p>${esc(x[1])}</p><div class="task"><b>Zadatak</b>${esc(x[2])}</div><div class="row"><button class="btn btn-w" data-copy="${nx}">Kopiraj za Claude</button><button class="btn btn-o" data-toggle="${nx}">Završio sam ✓</button></div>`;
-  } else $("#next").innerHTML=`<span class="eyebrow">Kamp završen</span><h2>Svih ${ALL.length} lekcija je gotovo 👑</h2><p>Vreme je da znanje pretvoriš u proizvod.</p>`;
-  $("#planCount").textContent=PLAN.filter(m=>roundDone(m.n)).length+"/10 rundi";
-  $("#rounds").innerHTML=PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length;return `<i class="${c===m.l.length?"f":c?"p":""}"></i>`}).join("");
-  $("#modules").innerHTML=PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length,full=c===m.l.length,o=openM.has(m.n);
-    return `<section class="module ${full?"full":""}"><button class="mhead" data-m="${m.n}" aria-expanded="${o}"><span class="rn">${full?"✓":"R"+m.n}</span><span class="mt"><h3>${esc(m.t)}</h3><p>${esc(m.d)}</p><div class="mbar"><i style="width:${c/m.l.length*100}%"></i></div></span><span class="mc">${c}/${m.l.length}</span></button>${o?`<div class="lessons">${m.l.map((x,i)=>{const id=m.n+"."+(i+1),d=!!S.done[id];
-      return `<div class="lesson ${d?"done":""}"><button class="chk" data-toggle="${id}" aria-pressed="${d}" aria-label="Lekcija ${id} završena">${d?"✓":""}</button><div><div class="lt"><span class="id">${id}</span>${esc(x[0])}</div><p class="ld">${esc(x[1])}</p><div class="lk"><b>Zadatak</b>${esc(x[2])}</div><button class="copy" data-copy="${id}">Kopiraj za Claude</button></div></div>`}).join("")}</div>`:""}</section>`}).join("");
-  $("#ranks").innerHTML=RANKS.map((k,i)=>`<div class="rk ${i<=r?"on":""}"><div class="e">${k[2]}</div><div class="n">${k[1]}</div><div class="x">${k[0]} XP</div></div>`).join("");
-  $("#btnSound").textContent=S.sound?"🔊 Zvuk uključen":"🔇 Zvuk isključen";
-}
+   <div class="today ${ok?"ok":""}">${ok?"✅ Današnja runda je odrađena. Niz je siguran.":st?`⚠️ Danas još nemaš lekciju. Niz od ${st} dana se prekida u ponoć.`:"🔔 Odradi jednu lekciju danas i pokreni niz."}</div></section>`}
 
-/* Zvuk gonga i konfete */
+function vTrening(){
+  const nx=ALL.find(id=>!S.done[id]);let h=fighterHTML();
+  if(nx){const {m,x}=lesson(nx);
+    h+=`<section class="next"><span class="eyebrow">Sledeća lekcija · ${nx} · Runda ${m}</span><h2>${esc(x[0])}</h2><p>${esc(x[1])}</p><div class="task"><b>Zadatak</b>${esc(x[2])}</div>
+    <ol class="steps"><li>Kopiraj i nalepi Claude-u</li><li>Uradi lekciju i zadatak, odgovori na 3 pitanja</li><li>Nalepi rezime u belešku i predaj</li></ol>
+    <div class="row"><button class="btn btn-w" data-copy="${nx}">1 · Kopiraj za Claude</button><button class="btn btn-o" data-finish="${nx}">3 · Predaj lekciju</button></div></section>`;
+  } else h+=`<section class="next"><span class="eyebrow">Kamp završen</span><h2>Svih ${ALL.length} lekcija je gotovo 👑</h2><p>Vreme je da znanje pretvoriš u proizvod.</p></section>`;
+  const due=dueReviews();
+  if(due.length){h+=`<div class="secthead"><h3>Ponavljanje</h3><span class="eyebrow">${due.length} čeka · +${XP_REV} XP</span></div>`;
+    due.slice(0,3).forEach(id=>{const {x}=lesson(id),r=S.rev[id],shown=revShow[id];
+      h+=`<section class="card review"><span class="eyebrow">${r.ok?"Drugo":"Prvo"} ponavljanje · lekcija ${id}</span><h3>${esc(x[0])}</h3>
+      <p class="muted" style="margin:0;font-size:14px">Bez gledanja: šta pamtiš iz ove lekcije? Reci sebi naglas ili zapiši u 2 rečenice, pa uporedi sa svojom beleškom.</p>
+      ${shown?`<div class="note"><div class="nb">${esc(S.done[id].note||"Nema beleške za ovu lekciju.")}</div></div><div class="row"><button class="btn btn-r" data-revok="${id}">Sećao sam se ✓</button><button class="btn btn-g" data-revno="${id}">Treba da ponovim</button></div>`
+      :`<div class="row"><button class="btn btn-g" data-revshow="${id}">Prikaži moju belešku</button></div>`}</section>`})}
+  return h}
+
+function vPlan(){
+  let h=`<div class="secthead"><h1 class="viewtitle">Plan borbe</h1><span class="eyebrow">${PLAN.filter(m=>roundDone(m.n)).length}/10 rundi</span></div>`;
+  h+=`<div class="rounds">${PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length;return `<i class="${c===m.l.length?"f":c?"p":""}"></i>`}).join("")}</div>`;
+  h+=`<div class="list">`+PLAN.map(m=>{const c=m.l.filter((_,i)=>S.done[m.n+"."+(i+1)]).length,full=c===m.l.length,o=openM.has(m.n);
+    return `<section class="module ${full?"full":""}"><button class="mhead" data-m="${m.n}" aria-expanded="${o}"><span class="rn">${full?"✓":"R"+m.n}</span><span class="mt"><h3>${esc(m.t)}</h3><p>${esc(m.d)}</p><div class="mbar"><i style="width:${c/m.l.length*100}%"></i></div></span><span class="mc">${c}/${m.l.length}</span></button>${o?m.l.map((x,i)=>{const id=m.n+"."+(i+1),d=!!S.done[id];
+      return `<div class="lesson ${d?"done":""}"><button class="chk" data-${d?"view":"finish"}="${id}" aria-label="${d?"Pogledaj belešku za":"Predaj"} lekciju ${id}">${d?"✓":""}</button><div><div class="lt"><span class="id">${id}</span>${esc(x[0])}</div><p class="ld">${esc(x[1])}</p><div class="lk"><b>Zadatak</b>${esc(x[2])}</div><div class="row"><button class="small" data-copy="${id}">Kopiraj za Claude</button>${d?`<button class="small" data-view="${id}">Beleška</button>`:`<button class="small" data-finish="${id}">Predaj</button>`}</div></div></div>`}).join(""):""}</section>`}).join("")+`</div>`;
+  return h}
+
+function vSveska(){
+  const ids=ALL.filter(id=>S.done[id]);const f=q.sveska.trim().toLowerCase();
+  const rows=ids.filter(id=>!f||(lesson(id).x[0]+" "+(S.done[id].note||"")).toLowerCase().includes(f));
+  let h=`<div class="secthead"><h1 class="viewtitle">Moja sveska</h1><span class="eyebrow">${ids.length} beleški</span></div>`;
+  h+=`<input id="qSveska" type="search" placeholder="Pretraži beleške…" value="${esc(q.sveska)}" aria-label="Pretraži beleške">`;
+  if(!ids.length)h+=`<div class="card empty">Ovde se skupljaju tvoje beleške iz lekcija.<br>Završi prvu lekciju i tvoj lični priručnik počinje.</div>`;
+  else if(!rows.length)h+=`<div class="card empty">Nema beleški za „${esc(q.sveska)}“.</div>`;
+  else h+=`<div class="list">`+rows.map(id=>`<section class="card note"><div class="nt"><b><span class="muted" style="font-family:var(--mono);font-size:12px;margin-right:6px">${id}</span>${esc(lesson(id).x[0])}</b><span class="nd">${fmt(S.done[id].t)}</span></div><div class="nb clip">${esc(S.done[id].note||"(bez beleške)")}</div><div class="row"><button class="small" data-view="${id}">Otvori</button></div></section>`).join("")+`</div>`;
+  return h}
+
+function vRecnik(){
+  const un=unlockedTerms().length,f=q.recnik.trim().toLowerCase();
+  const rows=TERMS.filter(t=>!f||(S.done[t[0]]&&(t[1]+" "+t[2]).toLowerCase().includes(f)));
+  let h=`<div class="secthead"><h1 class="viewtitle">Rečnik</h1><span class="eyebrow">${un}/${TERMS.length} otključano</span></div>`;
+  h+=`<input id="qRecnik" type="search" placeholder="Pretraži pojmove…" value="${esc(q.recnik)}" aria-label="Pretraži pojmove">`;
+  h+=`<div class="list">`+rows.map(t=>{const u=!!S.done[t[0]];return `<section class="card term ${u?"":"locked"}"><b>${u?"":"🔒 "}${esc(t[1])}</b><p>${u?esc(t[2]):"Otključava se kad završiš lekciju "+t[0]+"."}</p>${u?`<span class="src">iz lekcije ${t[0]}</span>`:""}</section>`}).join("")+`</div>`;
+  return h}
+
+function calHTML(){
+  const weeks=15,today=new Date();today.setHours(12,0,0,0);
+  const start=addDays(today,-((today.getDay()+6)%7)-7*(weeks-1));
+  const c={};Object.values(S.done).forEach(v=>{const d=day(v.t);c[d]=(c[d]||0)+1});
+  let cells="";for(let i=0;i<weeks*7;i++){const d=addDays(start,i);if(d>today){cells+=`<i style="visibility:hidden"></i>`;continue}const n=c[day(d)]||0;cells+=`<i class="${n>=3?"l3":n===2?"l2":n===1?"l1":""} ${day(d)===day(today)?"t":""}" title="${fmt(d)}: ${n} lekcija"></i>`}
+  const daysActive=Object.keys(c).filter(d=>new Date(d+"T12:00")>=start).length;
+  return `<section class="card"><div class="secthead" style="margin-bottom:10px"><h3>Kalendar treninga</h3><span class="eyebrow">${daysActive} dana učenja · 15 ned.</span></div><div class="cal"><div class="calgrid">${cells}</div></div><div class="legend">manje <i style="background:var(--surface2)"></i><i style="background:#5a1c26"></i><i style="background:#a01f33"></i><i style="background:#ff4a60"></i> više</div></section>`}
+
+function vProfil(){
+  const r=rankOf(xp()),days=S.lastBackup?Math.floor((Date.now()-new Date(S.lastBackup))/864e5):null;
+  let h=`<h1 class="viewtitle">Profil</h1>`+fighterHTML()+calHTML();
+  h+=`<div class="secthead"><h3>Bedževi</h3><span class="eyebrow">${S.badges.length}/${BADGES.length}</span></div><div class="badges">${BADGES.map(b=>`<div class="bd ${S.badges.includes(b[0])?"on":""}"><span class="e">${b[1]}</span><span class="n">${b[2]}</span><span class="d">${b[3]}</span></div>`).join("")}</div>`;
+  h+=`<div class="secthead"><h3>Rangovi</h3><span class="eyebrow">${XP_L} XP lekcija · +${XP_R} runda · +${XP_REV} ponavljanje</span></div><div class="ranks">${RANKS.map((k,i)=>`<div class="rk ${i<=r?"on":""}"><div class="e">${k[2]}</div><div class="n">${k[1]}</div><div class="x">${k[0]} XP</div></div>`).join("")}</div>`;
+  h+=`<section class="card" style="display:flex;flex-direction:column;gap:10px"><h3 style="font-size:16px;font-weight:900;text-transform:uppercase">Rezervna kopija</h3>
+   <p class="muted" style="margin:0;font-size:14px">Napredak i beleške su samo na ovom telefonu. Sačuvaj kopiju da ih ne izgubiš ako promeniš telefon ili obrišeš Chrome.</p>
+   <div class="${days===null||days>7?"today":"today ok"}">${days===null?"⚠️ Još nemaš nijednu kopiju.":days===0?"✅ Kopija napravljena danas.":`${days>7?"⚠️":"✅"} Poslednja kopija pre ${days} dana.`}</div>
+   <div class="row"><button class="btn btn-r" id="bkSave">Sačuvaj fajl</button><button class="btn btn-g" id="bkCopy">Kopiraj kao tekst</button><button class="btn btn-g" id="bkLoad">Vrati iz fajla</button></div></section>`;
+  h+=`<section class="card" style="display:flex;flex-direction:column;gap:10px"><h3 style="font-size:16px;font-weight:900;text-transform:uppercase">Podešavanja</h3>
+   <p class="muted" style="margin:0;font-size:14px">Podsetnici stižu u 8h i 21h preko aplikacije ntfy. Ako si danas završio lekciju, večernji podsetnik postaje čestitka.</p>
+   <div class="row"><button class="btn btn-g" id="btnSound">${S.sound?"🔊 Zvuk uključen":"🔇 Zvuk isključen"}</button><button class="btn btn-g" id="btnSummary">Kopiraj napredak za Claude</button></div></section>`;
+  return h}
+
+function render(){
+  const v={trening:vTrening,plan:vPlan,sveska:vSveska,recnik:vRecnik,profil:vProfil}[VIEW]();
+  $("#view").innerHTML=`<div style="display:flex;flex-direction:column;gap:16px">${v}</div>`;
+  renderTabs();
+  const qs=$("#qSveska");if(qs)qs.oninput=e=>{q.sveska=e.target.value;const p=e.target.selectionStart;render();const n=$("#qSveska");n.focus();n.setSelectionRange(p,p)};
+  const qr=$("#qRecnik");if(qr)qr.oninput=e=>{q.recnik=e.target.value;const p=e.target.selectionStart;render();const n=$("#qRecnik");n.focus();n.setSelectionRange(p,p)};
+}
+function go(v){VIEW=v;render();scrollTo(0,0)}
+
+/* ---------- sheet ---------- */
+function openSheet(html){$("#sheetBody").innerHTML=html;$("#sheet").hidden=false}
+function closeSheet(){$("#sheet").hidden=true;$("#sheetBody").innerHTML=""}
+$("#sheet").addEventListener("click",e=>{if(e.target.id==="sheet")closeSheet()});
+
+function finishSheet(id){
+  const {x}=lesson(id);
+  openSheet(`<span class="eyebrow">Predaja · lekcija ${id}</span><h3>${esc(x[0])}</h3>
+   <p>Nalepi rezime koji ti je Claude dao na kraju lekcije (3 pitanja i tvoji odgovori) ili svojim rečima napiši šta si naučio. Najmanje ${MIN_NOTE} znakova.</p>
+   <textarea id="noteIn" placeholder="Šta sam naučio u ovoj lekciji…"></textarea><div class="count" id="noteCount">0/${MIN_NOTE}</div>
+   <div class="row"><button class="btn btn-r" id="noteOk" disabled>Predaj i završi lekciju</button><button class="btn btn-g" id="noteCancel">Odustani</button></div>`);
+  const t=$("#noteIn"),b=$("#noteOk"),c=$("#noteCount");
+  t.oninput=()=>{const n=t.value.trim().length;c.textContent=n+"/"+MIN_NOTE;c.classList.toggle("ok",n>=MIN_NOTE);b.disabled=n<MIN_NOTE};
+  b.onclick=()=>{const n=t.value.trim();if(n.length<MIN_NOTE)return;closeSheet();complete(id,n)};
+  $("#noteCancel").onclick=closeSheet;
+}
+function viewSheet(id){
+  const {x}=lesson(id),d=S.done[id];
+  openSheet(`<span class="eyebrow">Beleška · lekcija ${id} · ${fmt(d.t)}</span><h3>${esc(x[0])}</h3>
+   <textarea id="noteEdit">${esc(d.note||"")}</textarea>
+   <div class="row"><button class="btn btn-r" id="noteSave">Sačuvaj izmene</button><button class="btn btn-g" id="noteClose">Zatvori</button></div>
+   <div id="undoBox"><button class="small" id="undoAsk" style="color:var(--muted)">Vrati lekciju kao nezavršenu</button></div>`);
+  $("#noteSave").onclick=()=>{const n=$("#noteEdit").value.trim();if(n.length<MIN_NOTE){toast("Beleška mora imati bar "+MIN_NOTE+" znakova.");return}S.done[id].note=n;save();closeSheet();render();toast("Beleška sačuvana.")};
+  $("#noteClose").onclick=closeSheet;
+  $("#undoAsk").onclick=()=>{$("#undoBox").innerHTML=`<p style="color:#ffb3bd">Sigurno? Gubiš XP i belešku za ovu lekciju.</p><div class="row" style="margin-top:8px"><button class="btn btn-r" id="undoYes">Da, vrati</button><button class="btn btn-g" id="undoNo">Ne</button></div>`;
+    $("#undoYes").onclick=()=>{delete S.done[id];delete S.rev[id];newBadgesSilently();save();closeSheet();render();toast("Lekcija "+id+" vraćena.")};
+    $("#undoNo").onclick=()=>viewSheet(id)};
+}
+function newBadgesSilently(){S.badges=BADGES.filter(b=>b[4]()).map(b=>b[0])}
+
+/* ---------- akcije ---------- */
+function complete(id,note){
+  const m=+id.split(".")[0],r0=rankOf(xp()),wasRound=roundDone(m);
+  S.done[id]={t:new Date().toISOString(),note};
+  S.rev[id]={ok:0,next:addDays(new Date(),3).toISOString()};
+  const fresh=newBadges();save();openM.add(m);
+  const r1=rankOf(xp()),wins=[];
+  if(r1>r0)wins.push(["Novi rang: "+RANKS[r1][1]+" "+RANKS[r1][2],"Svaka čast, Uroše!"]);
+  if(roundDone(m)&&!wasRound)wins.push(["Runda "+m+" dobijena! 🥊","+"+XP_R+" XP bonus"]);
+  fresh.forEach(b=>wins.push(["Bedž: "+b[2]+" "+b[1],b[3]]));
+  try{navigator.vibrate&&navigator.vibrate(wins.length?[80,60,80,60,200]:60)}catch(e){}
+  if(wins.length){bell(3);confetti(200);showWins(wins)}else{bell(1);confetti(50);toast("+"+XP_L+" XP · lekcija "+id+" gotova 💪")}
+  ping();render();
+}
+function reviewOk(id){const r=S.rev[id];r.ok=(r.ok||0)+1;r.next=r.ok>=2?null:addDays(new Date(),7).toISOString();delete revShow[id];const fresh=newBadges();save();bell(1);
+  if(fresh.length){confetti(120);showWins(fresh.map(b=>["Bedž: "+b[2]+" "+b[1],b[3]]))}else toast("+"+XP_REV+" XP · znanje je tu 🧠");render()}
+function reviewNo(id){S.rev[id].next=addDays(new Date(),2).toISOString();delete revShow[id];save();toast("Važi, pitam te opet za 2 dana.");render()}
+
+/* pametni podsetnik: javi serveru da je danas učio */
+async function ping(){S.pendingPing=day(new Date());save();try{const r=await fetch("https://ntfy.sh/"+DONE_TOPIC,{method:"POST",body:S.pendingPing});if(r.ok){S.pendingPing=null;save()}}catch(e){}}
+if(S.pendingPing&&S.pendingPing===day(new Date()))ping();
+
+/* rezervna kopija */
+function backupData(){return JSON.stringify({app:"claude-kamp",v:2,saved:new Date().toISOString(),S:{done:S.done,rev:S.rev,badges:S.badges}})}
+function markBackup(){S.lastBackup=new Date().toISOString();newBadges();save();render()}
+function restore(text){
+  let d;try{d=JSON.parse(text)}catch(e){toast("Fajl nije ispravna kopija.");return}
+  if(!d||d.app!=="claude-kamp"||!d.S||typeof d.S.done!=="object"){toast("Ovo nije kopija Claude Kampa.");return}
+  const n=Object.keys(d.S.done).length;
+  openSheet(`<h3>Vrati kopiju?</h3><p>Kopija od ${fmt(d.saved)} ima ${n} završenih lekcija. Trenutni napredak na ovom telefonu (${Object.keys(S.done).length} lekcija) biće zamenjen.</p><div class="row"><button class="btn btn-r" id="rsYes">Vrati kopiju</button><button class="btn btn-g" id="rsNo">Odustani</button></div>`);
+  $("#rsYes").onclick=()=>{S.done=d.S.done;S.rev=d.S.rev||{};S.badges=d.S.badges||[];newBadgesSilently();save();closeSheet();render();toast("Napredak vraćen: "+n+" lekcija.")};
+  $("#rsNo").onclick=closeSheet;
+}
+$("#fileIn").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restore(r.result);r.readAsText(f);e.target.value=""};
+
+/* zvuk, konfete, poruke */
 let AC=null;
 function bell(times){if(!S.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();for(let k=0;k<times;k++){const t=AC.currentTime+k*.28;[880,1320,1760].forEach((f,j)=>{const o=AC.createOscillator(),g=AC.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.25/(j+1),t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+1.2);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+1.3)})}}catch(e){}}
 function confetti(n){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;const c=$("#fx"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;const cols=["#D7263D","#E8B23A","#FFFFFF","#3DBE7E"];const P=Array.from({length:n},()=>({x:c.width/2,y:c.height*.4,vx:(Math.random()-.5)*14,vy:-Math.random()*14-4,r:Math.random()*6+3,c:cols[Math.random()*4|0],a:Math.random()*6}));let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.a+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);x.restore()});if(++f<110)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})()}
-function win(title,sub){const w=$("#win");w.innerHTML=`<div>${esc(title)}<small>${esc(sub)}</small></div>`;w.hidden=false;clearTimeout(w._t);w._t=setTimeout(()=>w.hidden=true,1900)}
-function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2000)}
-async function copy(t){try{await navigator.clipboard.writeText(t);toast("Kopirano. Nalepi u chat sa Claude-om.")}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Kopirano.")}catch(_){toast("Označi tekst i kopiraj ručno.")}ta.remove()}}
+function showWins(list){const w=$("#win");let i=0;(function next(){if(i>=list.length){w.hidden=true;return}const [a,b]=list[i++];w.hidden=true;void w.offsetWidth;w.innerHTML=`<div>${esc(a)}<small>${esc(b)}</small></div>`;w.hidden=false;clearTimeout(w._t);w._t=setTimeout(next,1900)})()}
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("on");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("on"),2200)}
+async function copy(t,msg){try{await navigator.clipboard.writeText(t);toast(msg||"Kopirano. Nalepi u chat sa Claude-om.");return true}catch(e){const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}ta.remove();toast(ok?(msg||"Kopirano."):"Označi tekst i kopiraj ručno.");return ok}}
 
-function toggle(id){
-  const m=+id.split(".")[0];
-  if(S.done[id]){delete S.done[id];save();render();toast("Lekcija "+id+" vraćena.");return}
-  const r0=rankOf(xp()),wasRound=roundDone(m);
-  S.done[id]=new Date().toISOString();save();openM.add(m);
-  const r1=rankOf(xp());
-  try{navigator.vibrate&&navigator.vibrate(roundDone(m)&&!wasRound?[80,60,80,60,200]:60)}catch(e){}
-  if(r1>r0){bell(3);confetti(220);win("Novi rang: "+RANKS[r1][1]+" "+RANKS[r1][2],"Svaka čast, Uroše!")}
-  else if(roundDone(m)&&!wasRound){bell(3);confetti(160);win("Runda "+m+" dobijena! 🥊","+250 XP bonus")}
-  else{bell(1);confetti(50);toast("+100 XP · lekcija "+id+" gotova 💪")}
-  render();
-}
 document.addEventListener("click",e=>{
-  const t=e.target.closest("[data-toggle]");if(t){toggle(t.dataset.toggle);return}
-  const c=e.target.closest("[data-copy]");if(c){copy(msgFor(c.dataset.copy));return}
-  const h=e.target.closest(".mhead");if(h){const n=+h.dataset.m;openM.has(n)?openM.delete(n):openM.add(n);render()}
+  const g=k=>e.target.closest("[data-"+k+"]");let el;
+  if(el=g("tab"))return go(el.dataset.tab);
+  if(el=g("copy"))return copy(msgFor(el.dataset.copy));
+  if(el=g("finish"))return finishSheet(el.dataset.finish);
+  if(el=g("view"))return viewSheet(el.dataset.view);
+  if(el=g("revshow")){revShow[el.dataset.revshow]=1;return render()}
+  if(el=g("revok"))return reviewOk(el.dataset.revok);
+  if(el=g("revno"))return reviewNo(el.dataset.revno);
+  if(el=g("m")){const n=+el.dataset.m;openM.has(n)?openM.delete(n):openM.add(n);return render()}
+  const id=e.target.closest("button")?.id;
+  if(id==="btnSound"){S.sound=!S.sound;save();render()}
+  else if(id==="btnSummary"){const ids=ALL.filter(i=>S.done[i]);copy(`Claude Kamp napredak: ${ids.length}/${ALL.length} lekcija, ${xp()} XP, rang ${RANKS[rankOf(xp())][1]}, niz ${streak()} dana, bedževi ${S.badges.length}/${BADGES.length}. Završene: ${ids.join(", ")||"nijedna"}.`)}
+  else if(id==="bkSave"){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([backupData()],{type:"application/json"}));a.download="claude-kamp-kopija-"+day(new Date())+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);markBackup();toast("Kopija sačuvana u Preuzimanja (Downloads).")}
+  else if(id==="bkCopy"){copy(backupData(),"Kopija kopirana. Pošalji je sebi ili Claude-u.").then(ok=>{if(ok)markBackup()})}
+  else if(id==="bkLoad"){$("#fileIn").click()}
 });
-$("#btnInfo").onclick=()=>$("#sheet").hidden=false;
-$("#btnClose").onclick=()=>$("#sheet").hidden=true;
-$("#sheet").onclick=e=>{if(e.target.id==="sheet")$("#sheet").hidden=true};
-$("#btnSound").onclick=()=>{S.sound=!S.sound;save();render()};
-$("#btnSummary").onclick=()=>{const ids=ALL.filter(id=>S.done[id]);copy(`Claude Kamp napredak: ${ids.length}/${ALL.length} lekcija, ${xp()} XP, rang ${RANKS[rankOf(xp())][1]}, niz ${streak()} dana. Završene: ${ids.join(", ")||"nijedna"}.`)};
+
 const first=ALL.find(id=>!S.done[id]);openM.add(first?+first.split(".")[0]:1);
-render();
+newBadgesSilently();save();render();
 if("serviceWorker" in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden){if(S.pendingPing===day(new Date()))ping();render()}});
 </script>
 </body>
 </html>

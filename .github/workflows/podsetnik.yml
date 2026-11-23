@@ -11,6 +11,7 @@ jobs:
         env:
           TOPIC: ${{ secrets.NTFY_TOPIC }}
           RUCNO: ${{ github.event_name == 'workflow_dispatch' }}
+          DONE_TOPIC: ckd-2cb1e9017cd4026c
         run: |
           H=$(TZ=Europe/Belgrade date +%H)
           D=$(TZ=Europe/Belgrade date +%j)
@@ -18,6 +19,12 @@ jobs:
           elif [ "$H" = "08" ]; then KIND=jutro
           elif [ "$H" = "21" ]; then KIND=vece
           else echo "Nije vreme ($H h)"; exit 0; fi
+          PRIO=4
+          if [ "$KIND" = "vece" ]; then
+            DANAS=$(TZ=Europe/Belgrade date +%F)
+            UCIO=$(curl -s "https://ntfy.sh/$DONE_TOPIC/json?poll=1&since=20h" | jq -r '.message // empty' | grep -c "^$DANAS$" || true)
+            if [ "$UCIO" -gt 0 ]; then KIND=bravo; PRIO=2; fi
+          fi
           case $KIND in
             jutro)
               T="Gong! Runda počinje 🥊"
@@ -25,10 +32,13 @@ jobs:
             vece)
               T="Jesi odradio današnju rundu? 🔥"
               M=("Ako jesi, svaka čast. Ako nisi, još stigneš 15 minuta." "Niz dana se prekida u ponoć. Jedna lekcija i spavaj mirno." "Ne idi u krevet bez runde. 15 minuta, Uroše." "Dan bez treninga je izgubljen dan. Otvori Kamp.");;
+            bravo)
+              T="Runda odrađena ✅"
+              M=("Danas si učio. Niz raste 🔥 Odmori, sutra nova runda." "Svaka čast! Šampioni se grade ovako, dan po dan." "Lekcija je u džepu. Laku noć, borče 🥊");;
             test)
               T="Claude Kamp radi ✅"; M=("Podsetnici su povezani. Vidimo se u 8h i 21h.");;
           esac
           MSG="${M[$((10#$D % ${#M[@]}))]}"
-          jq -n --arg t "$TOPIC" --arg ti "$T" --arg m "$MSG" \
-            '{topic:$t,title:$ti,message:$m,tags:["boxing_glove"],priority:4,click:"https://tacicbusiness.github.io/claude-kamp/"}' \
+          jq -n --arg t "$TOPIC" --arg ti "$T" --arg m "$MSG" --arg p "$PRIO" \
+            '{topic:$t,title:$ti,message:$m,tags:["boxing_glove"],priority:($p|tonumber),click:"https://tacicbusiness.github.io/claude-kamp/"}' \
             | curl -sS -H "Content-Type: application/json" -d @- https://ntfy.sh
